@@ -13,7 +13,7 @@
 #define ARRAY_SIZE 10000
 #define COLORS_AMOUNT 12
 #define EPSILON 1E-3
-#define BASIC_COLOR CLITERAL(Color) {72, 135, 184, 255}
+#define BASIC_COLOR CLITERAL(Color) { 72, 135, 184, 255 }
 
 typedef double function_type(double x);
 
