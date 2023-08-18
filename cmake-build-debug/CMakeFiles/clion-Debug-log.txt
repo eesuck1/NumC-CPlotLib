@@ -1,0 +1,63 @@
+"C:\CLion 2023.1.4\bin\cmake\win\x64\bin\cmake.exe" -DCMAKE_BUILD_TYPE=Debug "-DCMAKE_MAKE_PROGRAM=C:/CLion 2023.1.4/bin/ninja/win/x64/ninja.exe" -G Ninja -S C:\Git\RayLib -B C:\Git\RayLib\cmake-build-debug
+-- The C compiler identification is GNU 11.2.0
+-- The CXX compiler identification is GNU 11.2.0
+-- Detecting C compiler ABI info
+-- Detecting C compiler ABI info - done
+-- Check for working C compiler: C:/CLion 2023.1.4/bin/mingw/bin/gcc.exe - skipped
+-- Detecting C compile features
+-- Detecting C compile features - done
+-- Detecting CXX compiler ABI info
+-- Detecting CXX compiler ABI info - done
+-- Check for working CXX compiler: C:/CLion 2023.1.4/bin/mingw/bin/g++.exe - skipped
+-- Detecting CXX compile features
+-- Detecting CXX compile features - done
+-- Populating raylib
+-- Configuring done
+-- Generating done
+-- Build files have been written to: C:/Git/RayLib/cmake-build-debug/_deps/raylib-subbuild
+[1/9] Creating directories for 'raylib-populate'
+[1/9] Performing download step (download, verify and extract) for 'raylib-populate'
+-- Downloading...
+   dst='C:/Git/RayLib/cmake-build-debug/_deps/raylib-subbuild/raylib-populate-prefix/src/4.5.0.tar.gz'
+   timeout='none'
+   inactivity timeout='none'
+-- Using src='https://github.com/raysan5/raylib/archive/refs/tags/4.5.0.tar.gz'
+-- Downloading... done
+-- extracting...
+     src='C:/Git/RayLib/cmake-build-debug/_deps/raylib-subbuild/raylib-populate-prefix/src/4.5.0.tar.gz'
+     dst='C:/Git/RayLib/cmake-build-debug/_deps/raylib-src'
+-- extracting... [tar xfz]
+-- extracting... [analysis]
+-- extracting... [rename]
+-- extracting... [clean up]
+-- extracting... done
+[2/9] No update step for 'raylib-populate'
+[3/9] No patch step for 'raylib-populate'
+[5/9] No configure step for 'raylib-populate'
+[6/9] No build step for 'raylib-populate'
+[7/9] No install step for 'raylib-populate'
+[8/9] No test step for 'raylib-populate'
+[9/9] Completed 'raylib-populate'
+-- Performing Test COMPILER_HAS_THOSE_TOGGLES
+-- Performing Test COMPILER_HAS_THOSE_TOGGLES - Success
+-- Testing if -Werror=pointer-arith can be used -- compiles
+-- Testing if -Werror=implicit-function-declaration can be used -- compiles
+-- Testing if -fno-strict-aliasing can be used -- compiles
+-- Using raylib's GLFW
+-- Performing Test CMAKE_HAVE_LIBC_PTHREAD
+-- Performing Test CMAKE_HAVE_LIBC_PTHREAD - Success
+-- Found Threads: TRUE  
+-- Including Win32 support
+-- Looking for dinput.h
+-- Looking for dinput.h - found
+-- Looking for xinput.h
+-- Looking for xinput.h - found
+-- Audio Backend: miniaudio
+-- Building raylib static library
+-- Generated build type: Debug
+-- Compiling with the flags:
+--   PLATFORM=PLATFORM_DESKTOP
+--   GRAPHICS=GRAPHICS_API_OPENGL_33
+-- Configuring done
+-- Generating done
+-- Build files have been written to: C:/Git/RayLib/cmake-build-debug
