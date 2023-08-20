@@ -74,6 +74,8 @@ void matrix_print(NCMatrix matrix)
 
         printf("\n");
     }
+
+    printf("\n");
 }
 
 void matrix_random(NCMatrix matrix, unsigned int random_state)
@@ -86,8 +88,55 @@ void matrix_random(NCMatrix matrix, unsigned int random_state)
         {
             MAT_AT(matrix, i, j) = (double)rand() / RAND_MAX;
         }
+    }
+}
 
-        printf("\n");
+NCVector vector_allocate(size_t points)
+{
+    NCVector result;
+
+    result.length = points;
+    result.pointer = malloc(sizeof(*result.pointer) * points);
+
+    assert(result.pointer != NULL);
+
+    return result;
+}
+
+void vector_dot(NCVector destination, NCVector first, NCVector second)
+{
+    (void)destination;
+    (void)first;
+    (void)second;
+}
+
+void vector_sum(NCVector destination, NCVector first, NCVector second)
+{
+    assert((first.length == second.length && second.length == destination.length) && "Lengths of the vectors must be the same!");
+
+    for (size_t i = 0; i < destination.length; ++i)
+    {
+        VEC_AT(destination, i) = VEC_AT(first, i) + VEC_AT(second, i);
+    }
+}
+
+void vector_print(NCVector vector)
+{
+    for (size_t i = 0; i < vector.length; ++i)
+    {
+        printf("%f\t", VEC_AT(vector, i));
+    }
+
+    printf("\n");
+}
+
+void vector_random(NCVector vector, unsigned int random_state)
+{
+    srand(random_state);
+
+    for (size_t i = 0; i < vector.length; ++i)
+    {
+        VEC_AT(vector, i) = (double)rand() / RAND_MAX;
     }
 }
 

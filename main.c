@@ -15,12 +15,23 @@ int main()
     matrix_random(second, 42);
 
     matrix_print(first);
-    printf("\n");
     matrix_print(second);
-    printf("\n");
 
     matrix_sum(destination, first, second);
     matrix_print(destination);
+
+    NCVector v_first = vector_allocate(3);
+    NCVector v_second = vector_allocate(3);
+    NCVector v_destination = vector_allocate(3);
+
+    vector_random(v_first, 9);
+    vector_random(v_second, 10);
+
+    vector_print(v_first);
+    vector_print(v_second);
+
+    vector_sum(v_destination, v_first, v_second);
+    vector_print(v_destination);
 
     return 0;
 }
