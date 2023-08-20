@@ -33,5 +33,7 @@ int main()
     vector_sum(v_destination, v_first, v_second);
     vector_print(v_destination);
 
+    printf("%f", vector_dot(v_first, v_second));
+
     return 0;
 }

@@ -46,7 +46,13 @@ void matrix_dot(NCMatrix destination, NCMatrix first, NCMatrix second)
     assert((first.columns == second.rows) && "First columns must be the sane as second rows");
     assert((first.rows == destination.rows && second.columns == destination.columns) && "Destination dimensions must be correct!");
 
-    assert(0 && "TODO: not implemented");
+    for (size_t i = 0; i < destination.rows; ++i)
+    {
+        for (size_t j = 0; j < destination.columns; ++j)
+        {
+            // TODO: not implemented
+        }
+    }
 }
 
 void matrix_sum(NCMatrix destination, NCMatrix first, NCMatrix second)
@@ -91,6 +97,11 @@ void matrix_random(NCMatrix matrix, unsigned int random_state)
     }
 }
 
+void matrix_delete(NCMatrix matrix)
+{
+    free(matrix.pointer);
+}
+
 NCVector vector_allocate(size_t points)
 {
     NCVector result;
@@ -103,11 +114,18 @@ NCVector vector_allocate(size_t points)
     return result;
 }
 
-void vector_dot(NCVector destination, NCVector first, NCVector second)
+double vector_dot(NCVector first, NCVector second)
 {
-    (void)destination;
-    (void)first;
-    (void)second;
+    assert((first.length == second.length) && "Lengths of the vectors must be the same!");
+
+    double sum = 0;
+
+    for (size_t i = 0; i < first.length; ++i)
+    {
+        sum += VEC_AT(first, i) * VEC_AT(second, i);
+    }
+
+    return sum;
 }
 
 void vector_sum(NCVector destination, NCVector first, NCVector second)
@@ -138,5 +156,10 @@ void vector_random(NCVector vector, unsigned int random_state)
     {
         VEC_AT(vector, i) = (double)rand() / RAND_MAX;
     }
+}
+
+void vector_delete(NCVector vector)
+{
+    free(vector.pointer);
 }
 
