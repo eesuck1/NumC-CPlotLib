@@ -279,7 +279,7 @@ void vector_delete(NCVector vector)
     free(vector.pointer);
 }
 
-NCWeights model_allocate(size_t number_of_layers)
+NCWeights weights_allocate(size_t number_of_layers)
 {
     NCWeights result;
 
@@ -291,7 +291,7 @@ NCWeights model_allocate(size_t number_of_layers)
     return result;
 }
 
-NCWeights model_initialize(NCWeights weights, const NCMatrix *initializer_list, size_t initializer_size)
+NCWeights weights_initialize(NCWeights weights, const NCMatrix *initializer_list, size_t initializer_size)
 {
     assert((weights.layers == initializer_size) && "Model and Initializer lengths must be the same!");
 
@@ -303,19 +303,19 @@ NCWeights model_initialize(NCWeights weights, const NCMatrix *initializer_list, 
     return weights;
 }
 
-NCMatrix model_at(NCWeights model, size_t position)
+NCMatrix weights_at(NCWeights weights, size_t position)
 {
-    assert((position < model.layers) && "Model out of bounds!");
+    assert((position < weights.layers) && "Model out of bounds!");
 
-    return model.pointer[position];
+    return weights.pointer[position];
 }
 
-void model_print(NCWeights model)
+void weights_print(NCWeights weights)
 {
-    for (size_t i = 0; i < model.layers; ++i)
+    for (size_t i = 0; i < weights.layers; ++i)
     {
         printf("Layer %zu\n\n", i);
 
-        matrix_print(model_at(model, i));
+        matrix_print(weights_at(weights, i));
     }
 }

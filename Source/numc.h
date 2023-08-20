@@ -67,10 +67,11 @@ void vector_random(NCVector vector, unsigned int random_state); // feels a vecto
 void apply_to_vector(NCVector vector, function_type function); // // apply a given function to each element of a vector ( inplace )
 
 void vector_delete(NCVector vector); // deletes the vector
-NCWeights model_allocate(size_t initializer_size); // allocates in memory a model object and returns NCModel structure
-NCWeights model_initialize(NCWeights weights, const NCMatrix* initializer_list, size_t initializer_size); // initialize a model layers with Matrix
 
-NCMatrix model_at(NCWeights weights, size_t position); // returns a layer at given position
+NCWeights weights_allocate(size_t initializer_size); // allocates in memory a model object and returns NCModel structure
+NCWeights weights_initialize(NCWeights weights, const NCMatrix* initializer_list, size_t initializer_size); // initialize a model layers with Matrix
+NCMatrix weights_at(NCWeights weights, size_t position); // returns a layer at given position
+void weights_print(NCWeights weights); // print the weights
 
 double* linspace(double start, double end, size_t amount); // returns a linear spaced segment
 double* apply_to_array(const double* array, size_t length, function_type function); // apply a given function to given array and returns a copy

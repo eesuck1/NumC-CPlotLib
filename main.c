@@ -13,10 +13,10 @@ int main()
     matrix_random(m1, 1);
     matrix_random(m2, 2);
 
-    NCWeights weights = model_allocate(3);
-    model_initialize(weights, matrix, 3);
+    NCWeights weights = weights_allocate(3);
+    weights_initialize(weights, matrix, 3);
 
-    model_print(weights);
+    weights_print(weights);
 
     return 0;
 }
