@@ -3,11 +3,20 @@
 
 int main()
 {
-    NCVector vector = vector_allocate(3);
-    vector_random(vector, 0);
+    NCMatrix m0 = matrix_allocate(3, 3);
+    NCMatrix m1 = matrix_allocate(3, 3);
+    NCMatrix m2 = matrix_allocate(3, 3);
 
-    vector_print(vector);
-    printf("%f", vector_magnitude(vector));
+    NCMatrix matrix[3] = {m0, m1, m2};
+
+    matrix_random(m0, 0);
+    matrix_random(m1, 1);
+    matrix_random(m2, 2);
+
+    NCWeights weights = model_allocate(3);
+    model_initialize(weights, matrix, 3);
+
+    model_print(weights);
 
     return 0;
 }

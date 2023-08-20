@@ -28,7 +28,7 @@ double* apply_to_array(const double *array, const size_t length, function_type f
     return result;
 }
 
-NCMatrix matrix_allocate(size_t columns, size_t rows)
+NCMatrix matrix_allocate(size_t rows, size_t columns)
 {
     NCMatrix matrix;
 
@@ -39,6 +39,50 @@ NCMatrix matrix_allocate(size_t columns, size_t rows)
     assert(matrix.pointer != NULL);
 
     return matrix;
+}
+
+void matrix_initialize(NCMatrix matrix, const double* initializer, const size_t *initializer_size)
+{
+    size_t initializer_rows = initializer_size[0];
+    size_t initializer_columns = initializer_size[1];
+
+    assert((matrix.rows == initializer_rows && matrix.columns == initializer_columns) && "List and Matrix dimension must be the same!");
+
+    for (size_t i = 0; i < initializer_rows; ++i)
+    {
+        for (size_t j = 0; j < initializer_columns; ++j)
+        {
+            MAT_AT(matrix, i, j) = INITIALIZER_AT(initializer, initializer_columns, i, j);
+        }
+    }
+}
+
+void matrix_initialize_v(NCMatrix matrix, const NCVector *initializer, size_t initializer_size)
+{
+    assert((matrix.rows == initializer_size) && "Matrix and Initializer dimensions must be the same!");
+
+    for (size_t i = 0; i < initializer_size; ++i)
+    {
+        assert((matrix.columns == initializer[i].length) && "Matrix and Vector dimensions must be the same!");
+    }
+
+    size_t length = initializer[0].length;
+
+    for (size_t i = 0; i < initializer_size; ++i)
+    {
+        for (size_t j = 0; j < length; ++j)
+        {
+            MAT_AT(matrix, i, j) = VEC_AT(initializer[i], j);
+        }
+    }
+}
+
+double matrix_at(NCMatrix matrix, size_t row, size_t column)
+{
+    assert((row < matrix.rows) && "Matrix row out of bounds!");
+    assert((column < matrix.columns) && "Matrix column out of bounds");
+
+    return MAT_AT(matrix, row, column);
 }
 
 void matrix_dot(NCMatrix destination, NCMatrix first, NCMatrix second)
@@ -141,6 +185,23 @@ NCVector vector_allocate(size_t points)
     return result;
 }
 
+void vector_initialize(NCVector vector, const double *initializer, size_t initializer_size)
+{
+    assert((vector.length == initializer_size) && "Vector and Initializer lengths must be the same!");
+
+    for (size_t i = 0; i < initializer_size; ++i)
+    {
+        VEC_AT(vector, i) = initializer[i];
+    }
+}
+
+double vector_at(NCVector vector, size_t position)
+{
+    assert((position < vector.length) && "Vector out of bounds!");
+
+    return VEC_AT(vector, position);
+}
+
 double vector_dot(NCVector first, NCVector second)
 {
     assert((first.length == second.length) && "Lengths of the vectors must be the same!");
@@ -216,4 +277,45 @@ void apply_to_vector(NCVector vector, function_type function)
 void vector_delete(NCVector vector)
 {
     free(vector.pointer);
+}
+
+NCWeights model_allocate(size_t number_of_layers)
+{
+    NCWeights result;
+
+    result.layers = number_of_layers;
+    result.pointer = malloc(sizeof(*result.pointer) * number_of_layers);
+
+    assert(result.pointer != NULL);
+
+    return result;
+}
+
+NCWeights model_initialize(NCWeights weights, const NCMatrix *initializer_list, size_t initializer_size)
+{
+    assert((weights.layers == initializer_size) && "Model and Initializer lengths must be the same!");
+
+    for (size_t i = 0; i < initializer_size; ++i)
+    {
+        weights.pointer[i] = initializer_list[i];
+    }
+
+    return weights;
+}
+
+NCMatrix model_at(NCWeights model, size_t position)
+{
+    assert((position < model.layers) && "Model out of bounds!");
+
+    return model.pointer[position];
+}
+
+void model_print(NCWeights model)
+{
+    for (size_t i = 0; i < model.layers; ++i)
+    {
+        printf("Layer %zu\n\n", i);
+
+        matrix_print(model_at(model, i));
+    }
 }
