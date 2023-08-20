@@ -1,4 +1,4 @@
-## CPlotLib
+## CPlotLib / NumC
  Simple C ML / visualization project
 
 ## References:
