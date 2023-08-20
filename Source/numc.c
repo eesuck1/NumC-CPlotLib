@@ -16,7 +16,7 @@ double* linspace(double start, double end, size_t amount)
     return result;
 }
 
-double* use_to_array(const double *array, const size_t length, function_type function)
+double* apply_to_array(const double *array, const size_t length, function_type function)
 {
     double* result = (double*)malloc(length * sizeof(double));
 
@@ -50,7 +50,12 @@ void matrix_dot(NCMatrix destination, NCMatrix first, NCMatrix second)
     {
         for (size_t j = 0; j < destination.columns; ++j)
         {
-            // TODO: not implemented
+            MAT_AT(destination, i, j) = 0;
+
+            for (size_t k = 0; k < first.columns; ++k)
+            {
+                MAT_AT(destination, i, j) += MAT_AT(first, i, k) * MAT_AT(second, k, j);
+            }
         }
     }
 }
@@ -65,6 +70,17 @@ void matrix_sum(NCMatrix destination, NCMatrix first, NCMatrix second)
         for (size_t j = 0; j < destination.columns; ++j)
         {
             MAT_AT(destination, i, j) = MAT_AT(first, i, j) + MAT_AT(second, i, j);
+        }
+    }
+}
+
+void matrix_scale(NCMatrix matrix, double scalar)
+{
+    for (size_t i = 0; i < matrix.rows; ++i)
+    {
+        for (size_t j = 0; j < matrix.columns; ++j)
+        {
+            MAT_AT(matrix, i, j) *= scalar;
         }
     }
 }
@@ -93,6 +109,17 @@ void matrix_random(NCMatrix matrix, unsigned int random_state)
         for (size_t j = 0; j < matrix.columns; ++j)
         {
             MAT_AT(matrix, i, j) = (double)rand() / RAND_MAX;
+        }
+    }
+}
+
+void apply_to_matrix(NCMatrix matrix, function_type function)
+{
+    for (size_t i = 0; i < matrix.rows; ++i)
+    {
+        for (size_t j = 0; j < matrix.columns; ++j)
+        {
+            MAT_AT(matrix, i, j) = function(MAT_AT(matrix, i, j));
         }
     }
 }
@@ -138,6 +165,14 @@ void vector_sum(NCVector destination, NCVector first, NCVector second)
     }
 }
 
+void vector_scale(NCVector vector, double scalar)
+{
+    for (size_t i = 0; i < vector.length; ++i)
+    {
+        VEC_AT(vector, i) *= scalar;
+    }
+}
+
 void vector_print(NCVector vector)
 {
     for (size_t i = 0; i < vector.length; ++i)
@@ -158,8 +193,15 @@ void vector_random(NCVector vector, unsigned int random_state)
     }
 }
 
+void apply_to_vector(NCVector vector, function_type function)
+{
+    for (size_t i = 0; i < vector.length; ++i)
+    {
+        VEC_AT(vector, i) = function(VEC_AT(vector, i));
+    }
+}
+
 void vector_delete(NCVector vector)
 {
     free(vector.pointer);
 }
-

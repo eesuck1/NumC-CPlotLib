@@ -21,7 +21,7 @@ void plot(const double start, const double end, size_t functions_amount, functio
 
     for (size_t function_index = 0; function_index < functions_amount; function_index++)
     {
-        Y[function_index] = use_to_array(X, ARRAY_SIZE, functions[function_index]);
+        Y[function_index] = apply_to_array(X, ARRAY_SIZE, functions[function_index]);
     }
 
     while(!WindowShouldClose())
