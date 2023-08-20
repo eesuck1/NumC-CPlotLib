@@ -1,31 +1,26 @@
 #include "numc.h"
 
-const Color colors[COLORS_AMOUNT] = {
-        BLUE, GREEN, PURPLE, RED,
-        BROWN, PINK, BLACK,GRAY,
-        BEIGE, SKYBLUE, MAROON, VIOLET
-};
-
-double* linspace(double start, double end, unsigned int amount)
+double* linspace(double start, double end, size_t amount)
 {
     double *result = (double*)malloc(amount * sizeof(double));
-    if (result == NULL) return NULL;
 
-    double step = (end - start) / (amount - 1);
+    assert(result != NULL);
 
-    for (unsigned int i = 0; i < amount; i++)
+    double step = (end - start) / (double)(amount - 1);
+
+    for (size_t i = 0; i < amount; i++)
     {
-        result[i] = start + i * step;
+        result[i] = start + (double)i * step;
     }
 
     return result;
 }
 
-double* use_to_array(const double *array, const unsigned int length, function_type function)
+double* use_to_array(const double *array, const size_t length, function_type function)
 {
     double* result = (double*)malloc(length * sizeof(double));
 
-    for (unsigned int i = 0; i < length; i++)
+    for (size_t i = 0; i < length; i++)
     {
         result[i] = function(array[i]);
     }
@@ -33,120 +28,66 @@ double* use_to_array(const double *array, const unsigned int length, function_ty
     return result;
 }
 
-void init(void)
+NCMatrix matrix_allocate(size_t columns, size_t rows)
 {
-    InitWindow(WIDTH, HEIGHT, "@eesuck");
-    SetTargetFPS(NO_ANIMATION_FPS);
+    NCMatrix matrix;
+
+    matrix.columns = columns;
+    matrix.rows = rows;
+    matrix.pointer = malloc(sizeof(*matrix.pointer) * columns * rows);
+
+    assert(matrix.pointer != NULL);
+
+    return matrix;
 }
 
-void plot(const double start, const double end, unsigned int functions_amount, function_type* functions[])
+void matrix_dot(NCMatrix destination, NCMatrix first, NCMatrix second)
 {
-    init();
+    assert((first.columns == second.rows) && "First columns must be the sane as second rows");
+    assert((first.rows == destination.rows && second.columns == destination.columns) && "Destination dimensions must be correct!");
 
-    double* X = linspace(start, end, ARRAY_SIZE);
-    double* Y[functions_amount];
-
-    for (unsigned int function_index = 0; function_index < functions_amount; function_index++)
-    {
-        Y[function_index] = use_to_array(X, ARRAY_SIZE, functions[function_index]);
-    }
-
-    while(!WindowShouldClose())
-    {
-        BeginDrawing();
-        ClearBackground(RAYWHITE);
-
-        for (unsigned int function_index = 0; function_index < functions_amount; function_index++)
-        {
-            for (unsigned int point = 0; point < ARRAY_SIZE; point++)
-            {
-                DrawPixel((int)X[point] + WIDTH / 2,
-                          (int)-Y[function_index][point] + HEIGHT / 2,
-                          colors[function_index % COLORS_AMOUNT]);
-
-                DrawPixel((int)X[point] + WIDTH / 2,
-                          (int)-Y[function_index][point] + HEIGHT / 2 + 1,
-                          colors[function_index % COLORS_AMOUNT]);
-            }
-        }
-
-        EndDrawing();
-    }
-}
-
-void circle(const double* X, const double* Y, const double* R, unsigned int circles_amount)
-{
-    init();
-
-    while(!WindowShouldClose())
-    {
-        BeginDrawing();
-        ClearBackground(RAYWHITE);
-
-        for (unsigned int circle_index = 0; circle_index < circles_amount; circle_index++)
-        {
-            DrawCircleLines(
-                    (int)(WIDTH / 2.0 + X[circle_index]),
-                    (int)(HEIGHT / 2.0 - Y[circle_index]),
-                    (float)R[circle_index],
-                    colors[circle_index % COLORS_AMOUNT]);
-
-            DrawCircleLines(
-                    (int)(WIDTH / 2.0 + X[circle_index]),
-                    (int)(HEIGHT / 2.0 - Y[circle_index]),
-                    (float)(R[circle_index] + 1.0),
-                    colors[circle_index % COLORS_AMOUNT]);
-        }
-
-        EndDrawing();
-    }
-
-}
-
-void scatter(const double *X, const double *Y, unsigned int amount)
-{
-    init();
-
-    while(!WindowShouldClose())
-    {
-        BeginDrawing();
-        ClearBackground(RAYWHITE);
-
-        for (unsigned int point = 0; point < amount; point++)
-        {
-            DrawCircle((int)X[point], HEIGHT - Y[point], 3, BASIC_COLOR);
-        }
-
-        EndDrawing();
-    }
-}
-
-void bar(const double *Y, unsigned int amount)
-{
-    init();
-
-    double space = (float)WIDTH / (float)amount;
-
-    while(!WindowShouldClose())
-    {
-        BeginDrawing();
-        ClearBackground(RAYWHITE);
-
-        for (unsigned int point = 0; point < amount; point++)
-        {
-            DrawRectangle(
-                    (int)(space / 10 + space * point),
-                    HEIGHT - Y[point],
-                    (int)(space * 0.8),
-                    (int)Y[point],
-                    BASIC_COLOR);
-        }
-
-        EndDrawing();
-    }
-}
-
-void histogram(const double *X, const double *Y, unsigned int amount)
-{
     assert(0 && "TODO: not implemented");
 }
+
+void matrix_sum(NCMatrix destination, NCMatrix first, NCMatrix second)
+{
+    assert((first.rows == second.rows && second.rows ==  destination.rows) && "Matrix rows must be the same!");
+    assert((first.columns == second.columns && second.columns ==  destination.columns) && "Matrix columns must be the same!");
+
+    for (size_t i = 0; i < destination.rows; ++i)
+    {
+        for (size_t j = 0; j < destination.columns; ++j)
+        {
+            MAT_AT(destination, i, j) = MAT_AT(first, i, j) + MAT_AT(second, i, j);
+        }
+    }
+}
+
+void matrix_print(NCMatrix matrix)
+{
+    for (size_t i = 0; i < matrix.rows; ++i)
+    {
+        for (size_t j = 0; j < matrix.columns; ++j)
+        {
+            printf("%f\t", MAT_AT(matrix, i, j));
+        }
+
+        printf("\n");
+    }
+}
+
+void matrix_random(NCMatrix matrix, unsigned int random_state)
+{
+    srand(random_state);
+
+    for (size_t i = 0; i < matrix.rows; ++i)
+    {
+        for (size_t j = 0; j < matrix.columns; ++j)
+        {
+            MAT_AT(matrix, i, j) = (double)rand() / RAND_MAX;
+        }
+
+        printf("\n");
+    }
+}
+

@@ -2,28 +2,29 @@
 #define NUMC_H
 
 #include <assert.h>
+#include <stdio.h>
+#include <math.h>
+#include <malloc.h>
 
-#include "math.h"
-#include "malloc.h"
-#include "raylib.h"
-
-#define WIDTH 800
-#define HEIGHT 600
-#define NO_ANIMATION_FPS 30
-#define ARRAY_SIZE 10000
-#define COLORS_AMOUNT 12
-#define EPSILON 1E-3
-#define BASIC_COLOR CLITERAL(Color) { 72, 135, 184, 255 }
+#define MAT_AT(matrix, i, j) (matrix).pointer[(i) * (matrix).columns + (j)]
 
 typedef double function_type(double x);
 
-double* linspace(double start, double end, unsigned int amount); // returns a linear spaced segment
-double* use_to_array(const double* array, unsigned int length, function_type function); // calls a unary function to each number in an array
-void init(void); // initialize the raylib window
-void plot(double start, double end, unsigned int functions_amount, function_type* functions[]); // draws a plots of given number of functions
-void circle(const double* X, const double* Y, const double* R, unsigned int circles_amount); // draws a circles with centers in (x_i, y_i) and radius r_i
-void scatter(const double* X, const double* Y, unsigned int amount); // draws a scatter plot
-void bar(const double* Y, unsigned int amount); // draws a bar plot
-void histogram(const double* X, const double* Y, unsigned int amount); // draws a histogram
+typedef struct
+{
+    size_t columns;
+    size_t rows;
+    double *pointer;
+
+} NCMatrix; // NumC Matrix structure that contain: amount of column, amount of rows and pointer to data
+
+NCMatrix matrix_allocate(size_t columns, size_t rows); // allocates in memory a matrix object and returns NCMatrix structure
+void matrix_dot(NCMatrix destination, NCMatrix first, NCMatrix second); // produces a matrix dot product between first and second and puts into destination
+void matrix_sum(NCMatrix destination, NCMatrix first, NCMatrix second); // produces a matrix sum between first and second and puts into destination
+void matrix_print(NCMatrix matrix); // prints a matrix
+void matrix_random(NCMatrix matrix, unsigned int random_state); // feels a matrix with random numbers in range (0, 1)
+
+double* linspace(double start, double end, size_t amount); // returns a linear spaced segment
+double* use_to_array(const double* array, size_t length, function_type function); // calls a unary function to each number in an array
 
 #endif // NUMC_H
