@@ -3,11 +3,12 @@
 
 int main()
 {
-    NCLayers layers = layer_allocate(4);
-    size_t neurons[4] = {2, 4, 5, 1};
-    function_type activations[4] = {activation_identity, activation_identity, activation_identity, activation_identity };
-    layer_initialize(layers, neurons, activations);
-    layer_print(layers);
+    size_t neurons[4] = {3, 4, 4, 1};
+    function_type activations[4] = {activation_identity, activation_identity, activation_identity, activation_identity};
+
+    NCMPerceptron perceptron = perceptron_allocate(4, neurons, activations);
+
+    perceptron_print(perceptron);
 
     return 0;
 }

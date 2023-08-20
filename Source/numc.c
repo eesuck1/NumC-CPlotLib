@@ -373,9 +373,9 @@ size_t layer_at_length(NCLayers layers, size_t index)
     return layer_at(layers, index).columns;
 }
 
-NCModel model_allocate(size_t number_of_layers, const size_t *neurons, const function_type* activations)
+NCMPerceptron perceptron_allocate(size_t number_of_layers, const size_t *neurons, const function_type* activations)
 {
-    NCModel result;
+    NCMPerceptron result;
 
     NCLayers layers = layer_allocate(number_of_layers);
     layer_initialize(layers, neurons, activations);
@@ -392,7 +392,7 @@ NCModel model_allocate(size_t number_of_layers, const size_t *neurons, const fun
         matrices[i] = matrix;
     }
 
-    NCWeights weights = weights_allocate(number_of_layers);
+    NCWeights weights = weights_allocate(number_of_layers - 1);
     weights_initialize(weights, matrices, number_of_layers - 1);
 
     result.weights = weights;
@@ -400,9 +400,17 @@ NCModel model_allocate(size_t number_of_layers, const size_t *neurons, const fun
     return result;
 }
 
-void model_print(NCModel model)
+void perceptron_print(NCMPerceptron model)
 {
-    // TODO: not implemented
+    // TODO: optimize getting a layer and weight matrix by create separate functions
+
+    for (size_t i = 0; i  < model.weights.weights; ++i)
+    {
+        matrix_print(model.layers.matrices[i]);
+        matrix_print(model.weights.matrices[i]);
+    }
+
+    matrix_print(model.layers.matrices[model.layers.layers - 1]);
 }
 
 double activation_identity(double x) { return x; }

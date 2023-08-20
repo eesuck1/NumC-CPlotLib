@@ -12,10 +12,11 @@
 
 /*
  *
- * TODO: |-----------------------------------|
- * TODO: |   implement the Layers struct     |
- * TODO: |   implement the Model struct      |
- * TODO: |-----------------------------------|
+ * TODO: |--------------------------------------------------------------------------------------------|
+ * TODO: |   optimize getting a layer and weight matrix by create separate functions ( line 403 )     |
+ * TODO: |   create forwarding and backpropagation                                                    |
+ * TODO: |   optimize perceptron allocation                                                           |
+ * TODO: |--------------------------------------------------------------------------------------------|
  *
  */
 
@@ -51,10 +52,9 @@ typedef struct
 {
     NCLayers layers;
     NCWeights weights;
-} NCModel;
+} NCMPerceptron; // ...
 
 
-void weights_print(NCWeights weights); // print all layers of the model
 NCMatrix matrix_allocate(size_t rows, size_t columns); // allocates in memory a matrix object and returns NCMatrix structure
 void matrix_initialize(NCMatrix matrix, const double* initializer, const size_t* initializer_size); // initialize a matrix by a given initializer array passed by reference to first element ( for example &array[0][0] )
 void matrix_initialize_v(NCMatrix matrix, const NCVector* initializer, size_t initializer_size); // initialize a matrix by a given initializer array of vectors
@@ -92,8 +92,8 @@ NCMatrix layer_at(NCLayers layers, size_t index); // ...
 size_t layer_at_length(NCLayers layers, size_t index);
 void layer_print(NCLayers layers); // prints all layers
 
-NCModel model_allocate(size_t number_of_layers, const size_t* neurons, const function_type* activations);
-void model_print(NCModel model);
+NCMPerceptron perceptron_allocate(size_t number_of_layers, const size_t* neurons, const function_type* activations); // ...
+void perceptron_print(NCMPerceptron model); // ...
 
 double activation_identity(double x); // returns a same number
 
