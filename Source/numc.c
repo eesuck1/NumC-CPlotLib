@@ -319,3 +319,17 @@ void weights_print(NCWeights weights)
         matrix_print(weights_at(weights, i));
     }
 }
+
+NCLayer layer_allocate(size_t neurons)
+{
+    NCLayer result;
+    NCMatrix matrix = matrix_allocate(1, neurons);
+
+    result.neurons = neurons;
+    result.data = matrix;
+    result.activation = activation_identity;
+
+    return result;
+}
+
+double activation_identity(double x) { return x; }

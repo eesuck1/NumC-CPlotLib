@@ -14,7 +14,6 @@
  *
  * TODO: |-----------------------------------|
  * TODO: |   implement the Layers struct     |
- * TODO: |   implement the Functions struct  |
  * TODO: |   implement the Model struct      |
  * TODO: |-----------------------------------|
  *
@@ -81,6 +80,9 @@ NCMatrix weights_at(NCWeights weights, size_t position); // returns a layer at g
 void weights_print(NCWeights weights); // print the weights
 
 NCLayer layer_allocate(size_t neurons); // allocates in memory a Layer objects
+NCLayer layer_initialize(NCMatrix data, function_type activation);
+
+double activation_identity(double x);
 
 double* linspace(double start, double end, size_t amount); // returns a linear spaced segment
 double* apply_to_array(const double* array, size_t length, function_type function); // apply a given function to given array and returns a copy
