@@ -6,9 +6,9 @@
 #include <math.h>
 #include <malloc.h>
 
-#define MAT_AT(matrix, i, j) (matrix).pointer[(i) * (matrix).columns + (j)]
+#define MAT_AT(matrix, i, j) (matrix).numbers[(i) * (matrix).columns + (j)]
 #define INITIALIZER_AT(initializer, columns, i, j) (initializer)[(i) * (columns) + j]
-#define VEC_AT(vector, i) (vector).pointer[(i)]
+#define VEC_AT(vector, i) (vector).numbers[(i)]
 
 /*
  *
@@ -20,26 +20,33 @@
  *
  */
 
-typedef double function_type(double x);
+typedef double (*function_type)(double x);
 
 typedef struct
 {
     size_t columns;
     size_t rows;
-    double *pointer;
+    double *numbers;
 } NCMatrix; // NumC Matrix structure that contain: amount of column, amount of rows and pointer to data
 
 typedef struct
 {
     size_t length;
-    double *pointer;
+    double *numbers;
 } NCVector; // NumC Vector structure that contain: length of vector and pointer to data
 
 typedef struct
 {
-    NCMatrix *pointer;
-    size_t layers;
-} NCWeights;
+    size_t weights;
+    NCMatrix *matrices;
+} NCWeights; // NumC Weights structure that contain: numbers of weights matrices and matrices themselves
+
+typedef struct
+{
+    size_t neurons;
+    NCMatrix data;
+    function_type activation;
+} NCLayer; // NumC Layer structure that contain: number of neurons in Layer and data Vector
 
 
 void model_print(NCWeights weights); // print all layers of the model
@@ -68,10 +75,12 @@ void apply_to_vector(NCVector vector, function_type function); // // apply a giv
 
 void vector_delete(NCVector vector); // deletes the vector
 
-NCWeights weights_allocate(size_t initializer_size); // allocates in memory a model object and returns NCModel structure
-NCWeights weights_initialize(NCWeights weights, const NCMatrix* initializer_list, size_t initializer_size); // initialize a model layers with Matrix
+NCWeights weights_allocate(size_t initializer_size); // allocates in memory a weights object and returns NCModel structure
+NCWeights weights_initialize(NCWeights weights, const NCMatrix* initializer_list, size_t initializer_size); // initialize a weights layers with Matrices
 NCMatrix weights_at(NCWeights weights, size_t position); // returns a layer at given position
 void weights_print(NCWeights weights); // print the weights
+
+NCLayer layer_allocate(size_t neurons); // allocates in memory a Layer objects
 
 double* linspace(double start, double end, size_t amount); // returns a linear spaced segment
 double* apply_to_array(const double* array, size_t length, function_type function); // apply a given function to given array and returns a copy

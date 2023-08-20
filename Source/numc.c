@@ -34,9 +34,9 @@ NCMatrix matrix_allocate(size_t rows, size_t columns)
 
     matrix.columns = columns;
     matrix.rows = rows;
-    matrix.pointer = malloc(sizeof(*matrix.pointer) * columns * rows);
+    matrix.numbers = malloc(sizeof(*matrix.numbers) * columns * rows);
 
-    assert(matrix.pointer != NULL);
+    assert(matrix.numbers != NULL);
 
     return matrix;
 }
@@ -170,7 +170,7 @@ void apply_to_matrix(NCMatrix matrix, function_type function)
 
 void matrix_delete(NCMatrix matrix)
 {
-    free(matrix.pointer);
+    free(matrix.numbers);
 }
 
 NCVector vector_allocate(size_t points)
@@ -178,9 +178,9 @@ NCVector vector_allocate(size_t points)
     NCVector result;
 
     result.length = points;
-    result.pointer = malloc(sizeof(*result.pointer) * points);
+    result.numbers = malloc(sizeof(*result.numbers) * points);
 
-    assert(result.pointer != NULL);
+    assert(result.numbers != NULL);
 
     return result;
 }
@@ -276,28 +276,28 @@ void apply_to_vector(NCVector vector, function_type function)
 
 void vector_delete(NCVector vector)
 {
-    free(vector.pointer);
+    free(vector.numbers);
 }
 
 NCWeights weights_allocate(size_t number_of_layers)
 {
     NCWeights result;
 
-    result.layers = number_of_layers;
-    result.pointer = malloc(sizeof(*result.pointer) * number_of_layers);
+    result.weights = number_of_layers;
+    result.matrices = malloc(sizeof(*result.matrices) * number_of_layers);
 
-    assert(result.pointer != NULL);
+    assert(result.matrices != NULL);
 
     return result;
 }
 
 NCWeights weights_initialize(NCWeights weights, const NCMatrix *initializer_list, size_t initializer_size)
 {
-    assert((weights.layers == initializer_size) && "Model and Initializer lengths must be the same!");
+    assert((weights.weights == initializer_size) && "Model and Initializer lengths must be the same!");
 
     for (size_t i = 0; i < initializer_size; ++i)
     {
-        weights.pointer[i] = initializer_list[i];
+        weights.matrices[i] = initializer_list[i];
     }
 
     return weights;
@@ -305,14 +305,14 @@ NCWeights weights_initialize(NCWeights weights, const NCMatrix *initializer_list
 
 NCMatrix weights_at(NCWeights weights, size_t position)
 {
-    assert((position < weights.layers) && "Model out of bounds!");
+    assert((position < weights.weights) && "Model out of bounds!");
 
-    return weights.pointer[position];
+    return weights.matrices[position];
 }
 
 void weights_print(NCWeights weights)
 {
-    for (size_t i = 0; i < weights.layers; ++i)
+    for (size_t i = 0; i < weights.weights; ++i)
     {
         printf("Layer %zu\n\n", i);
 
