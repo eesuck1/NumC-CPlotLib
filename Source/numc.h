@@ -25,30 +25,36 @@ typedef struct
 {
     size_t columns;
     size_t rows;
-    double *numbers;
+    double* numbers;
 } NCMatrix; // NumC Matrix structure that contain: amount of column, amount of rows and pointer to data
 
 typedef struct
 {
     size_t length;
-    double *numbers;
+    double* numbers;
 } NCVector; // NumC Vector structure that contain: length of vector and pointer to data
 
 typedef struct
 {
     size_t weights;
-    NCMatrix *matrices;
+    NCMatrix* matrices;
 } NCWeights; // NumC Weights structure that contain: numbers of weights matrices and matrices themselves
 
 typedef struct
 {
-    size_t neurons;
-    NCMatrix data;
-    function_type activation;
-} NCLayer; // NumC Layer structure that contain: number of neurons in Layer and data Vector
+    size_t layers;
+    NCMatrix* matrices;
+    function_type* activations;
+} NCLayers; // NumC Layer structure that contain: number of neurons in Layer and data Vector
+
+typedef struct
+{
+    NCLayers layers;
+    NCWeights weights;
+} NCModel;
 
 
-void model_print(NCWeights weights); // print all layers of the model
+void weights_print(NCWeights weights); // print all layers of the model
 NCMatrix matrix_allocate(size_t rows, size_t columns); // allocates in memory a matrix object and returns NCMatrix structure
 void matrix_initialize(NCMatrix matrix, const double* initializer, const size_t* initializer_size); // initialize a matrix by a given initializer array passed by reference to first element ( for example &array[0][0] )
 void matrix_initialize_v(NCMatrix matrix, const NCVector* initializer, size_t initializer_size); // initialize a matrix by a given initializer array of vectors
@@ -58,6 +64,7 @@ void matrix_sum(NCMatrix destination, NCMatrix first, NCMatrix second); // produ
 void matrix_scale(NCMatrix matrix, double scalar); // multiplies a matrix by gives scalar
 void matrix_print(NCMatrix matrix); // prints a matrix
 void matrix_random(NCMatrix matrix, unsigned int random_state); // feels a matrix with random numbers in range (0, 1)
+void matrix_zero(NCMatrix matrix); // feels a matrix with 0.0
 void apply_to_matrix(NCMatrix matrix, function_type function); // apply a given function to each element of a matrix ( inplace )
 
 void matrix_delete(NCMatrix matrix); // deletes the matrix
@@ -75,14 +82,20 @@ void apply_to_vector(NCVector vector, function_type function); // // apply a giv
 void vector_delete(NCVector vector); // deletes the vector
 
 NCWeights weights_allocate(size_t initializer_size); // allocates in memory a weights object and returns NCModel structure
-NCWeights weights_initialize(NCWeights weights, const NCMatrix* initializer_list, size_t initializer_size); // initialize a weights layers with Matrices
+void weights_initialize(NCWeights weights, const NCMatrix* initializer_list, size_t initializer_size); // initialize a weights layers with Matrices
 NCMatrix weights_at(NCWeights weights, size_t position); // returns a layer at given position
 void weights_print(NCWeights weights); // print the weights
 
-NCLayer layer_allocate(size_t neurons); // allocates in memory a Layer objects
-NCLayer layer_initialize(NCMatrix data, function_type activation);
+NCLayers layer_allocate(size_t number_of_layers); // allocates in memory a Layer objects
+void layer_initialize(NCLayers layers, const size_t* neurons, const function_type* activations); // ...
+NCMatrix layer_at(NCLayers layers, size_t index); // ...
+size_t layer_at_length(NCLayers layers, size_t index);
+void layer_print(NCLayers layers); // prints all layers
 
-double activation_identity(double x);
+NCModel model_allocate(size_t number_of_layers, const size_t* neurons, const function_type* activations);
+void model_print(NCModel model);
+
+double activation_identity(double x); // returns a same number
 
 double* linspace(double start, double end, size_t amount); // returns a linear spaced segment
 double* apply_to_array(const double* array, size_t length, function_type function); // apply a given function to given array and returns a copy

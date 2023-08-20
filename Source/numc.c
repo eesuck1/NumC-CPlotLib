@@ -157,6 +157,17 @@ void matrix_random(NCMatrix matrix, unsigned int random_state)
     }
 }
 
+void matrix_zero(NCMatrix matrix)
+{
+    for (size_t i = 0; i < matrix.rows; ++i)
+    {
+        for (size_t j = 0; j < matrix.columns; ++j)
+        {
+            MAT_AT(matrix, i, j) = 0.0;
+        }
+    }
+}
+
 void apply_to_matrix(NCMatrix matrix, function_type function)
 {
     for (size_t i = 0; i < matrix.rows; ++i)
@@ -291,7 +302,7 @@ NCWeights weights_allocate(size_t number_of_layers)
     return result;
 }
 
-NCWeights weights_initialize(NCWeights weights, const NCMatrix *initializer_list, size_t initializer_size)
+void weights_initialize(NCWeights weights, const NCMatrix *initializer_list, size_t initializer_size)
 {
     assert((weights.weights == initializer_size) && "Model and Initializer lengths must be the same!");
 
@@ -299,8 +310,6 @@ NCWeights weights_initialize(NCWeights weights, const NCMatrix *initializer_list
     {
         weights.matrices[i] = initializer_list[i];
     }
-
-    return weights;
 }
 
 NCMatrix weights_at(NCWeights weights, size_t position)
@@ -320,16 +329,80 @@ void weights_print(NCWeights weights)
     }
 }
 
-NCLayer layer_allocate(size_t neurons)
+NCLayers layer_allocate(size_t number_of_layers)
 {
-    NCLayer result;
-    NCMatrix matrix = matrix_allocate(1, neurons);
+    NCLayers result;
 
-    result.neurons = neurons;
-    result.data = matrix;
-    result.activation = activation_identity;
+    result.layers = number_of_layers;
+    result.matrices = malloc(sizeof(*result.matrices) * number_of_layers);
+    result.activations = malloc(sizeof(*result.activations) * number_of_layers);
+
+    assert(result.matrices != NULL);
+    assert(result.activations != NULL);
 
     return result;
+}
+
+void layer_initialize(NCLayers layers, const size_t* neurons, const function_type* activations)
+{
+    for (size_t i = 0; i < layers.layers; ++i)
+    {
+        NCMatrix matrix = matrix_allocate(1, neurons[i]);
+        matrix_zero(matrix);
+
+        layers.matrices[i] = matrix;
+        layers.activations[i] = activations[i];
+    }
+}
+
+void layer_print(NCLayers layers)
+{
+    for (size_t i = 0; i < layers.layers; ++i)
+    {
+        matrix_print(layers.matrices[i]);
+    }
+}
+
+NCMatrix layer_at(NCLayers layers, size_t index)
+{
+    return layers.matrices[index];
+}
+
+size_t layer_at_length(NCLayers layers, size_t index)
+{
+    return layer_at(layers, index).columns;
+}
+
+NCModel model_allocate(size_t number_of_layers, const size_t *neurons, const function_type* activations)
+{
+    NCModel result;
+
+    NCLayers layers = layer_allocate(number_of_layers);
+    layer_initialize(layers, neurons, activations);
+
+    result.layers = layers;
+
+    NCMatrix matrices[number_of_layers - 1];
+
+    for (size_t i = 0; i < number_of_layers - 1; ++i)
+    {
+        NCMatrix matrix = matrix_allocate(layer_at_length(layers, i), layer_at_length(layers, i + 1));
+        matrix_random(matrix, 12);
+
+        matrices[i] = matrix;
+    }
+
+    NCWeights weights = weights_allocate(number_of_layers);
+    weights_initialize(weights, matrices, number_of_layers - 1);
+
+    result.weights = weights;
+
+    return result;
+}
+
+void model_print(NCModel model)
+{
+    // TODO: not implemented
 }
 
 double activation_identity(double x) { return x; }
