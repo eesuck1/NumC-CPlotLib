@@ -16,7 +16,6 @@ typedef struct
     size_t columns;
     size_t rows;
     double *pointer;
-
 } NCMatrix; // NumC Matrix structure that contain: amount of column, amount of rows and pointer to data
 
 typedef struct
@@ -36,6 +35,7 @@ void matrix_delete(NCMatrix matrix); // deletes the matrix
 
 NCVector vector_allocate(size_t points); // allocates in memory a vector object and returns NCVector structure
 double vector_dot(NCVector first, NCVector second); // produces a vector dot product between first and second and puts into destination
+double vector_magnitude(NCVector vector); // returns a vector magnitude
 void vector_sum(NCVector destination, NCVector first, NCVector second); // produces a vector sum between first and second and puts into destination
 void vector_scale(NCVector vector, double scalar); // multiplies a vector by giver scalar
 void vector_print(NCVector vector); // prints a vector

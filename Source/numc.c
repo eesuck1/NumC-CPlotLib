@@ -155,6 +155,18 @@ double vector_dot(NCVector first, NCVector second)
     return sum;
 }
 
+double vector_magnitude(NCVector vector)
+{
+    double result = 0;
+
+    for (size_t i = 0; i < vector.length; ++i)
+    {
+        result += pow(VEC_AT(vector, i), 2);
+    }
+
+    return sqrt(result);
+}
+
 void vector_sum(NCVector destination, NCVector first, NCVector second)
 {
     assert((first.length == second.length && second.length == destination.length) && "Lengths of the vectors must be the same!");
