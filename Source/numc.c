@@ -363,15 +363,8 @@ void layer_print(NCLayers layers)
     }
 }
 
-NCMatrix layer_at(NCLayers layers, size_t index)
-{
-    return layers.matrices[index];
-}
-
-size_t layer_at_length(NCLayers layers, size_t index)
-{
-    return layer_at(layers, index).columns;
-}
+NCMatrix layer_at(NCLayers layers, size_t index) { return layers.matrices[index]; }
+size_t layer_at_length(NCLayers layers, size_t index) { return layer_at(layers, index).columns; }
 
 NCPerceptron perceptron_allocate(size_t number_of_layers, const size_t *neurons, const function_type* activations)
 {
@@ -402,15 +395,19 @@ NCPerceptron perceptron_allocate(size_t number_of_layers, const size_t *neurons,
 
 void perceptron_print(NCPerceptron model)
 {
-    // TODO: optimize getting a layer and weight matrix by create separate functions
-
     for (size_t i = 0; i  < model.weights.weights; ++i)
     {
-        matrix_print(model.layers.matrices[i]);
-        matrix_print(model.weights.matrices[i]);
+        printf("Layer %zu\n", i);
+        matrix_print(perceptron_layer_at(model, i));
+        printf("Weights %zu\n", i);
+        matrix_print(perceptron_weight_at(model, i));
     }
 
-    matrix_print(model.layers.matrices[model.layers.layers - 1]);
+    matrix_print(perceptron_layer_at(model, perceptron_number_of_layers(model) - 1));
 }
+
+NCMatrix perceptron_layer_at(NCPerceptron model, size_t index) { return model.layers.matrices[index]; }
+NCMatrix perceptron_weight_at(NCPerceptron model, size_t index) { return model.weights.matrices[index]; }
+size_t perceptron_number_of_layers(NCPerceptron model) { return model.layers.layers; }
 
 double activation_identity(double x) { return x; }

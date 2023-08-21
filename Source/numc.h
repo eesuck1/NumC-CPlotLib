@@ -13,7 +13,6 @@
 /*
  *
  * TODO: |--------------------------------------------------------------------------------------------|
- * TODO: |   optimize getting a layer and weight matrix by create separate functions ( line 403 )     |
  * TODO: |   create forwarding and backpropagation                                                    |
  * TODO: |   optimize perceptron allocation                                                           |
  * TODO: |--------------------------------------------------------------------------------------------|
@@ -87,13 +86,16 @@ NCMatrix weights_at(NCWeights weights, size_t position); // returns a layer at g
 void weights_print(NCWeights weights); // print the weights
 
 NCLayers layer_allocate(size_t number_of_layers); // allocates in memory a Layer objects
-void layer_initialize(NCLayers layers, const size_t* neurons, const function_type* activations); // ...
-NCMatrix layer_at(NCLayers layers, size_t index); // ...
-size_t layer_at_length(NCLayers layers, size_t index);
+void layer_initialize(NCLayers layers, const size_t* neurons, const function_type* activations); // Initialize a Layers, with lengths from neurons array, by 0.0 and given functions
+NCMatrix layer_at(NCLayers layers, size_t index); // returns a Layer Matrix at given index
+size_t layer_at_length(NCLayers layers, size_t index); // returns a length of Layer Matrix at given index
 void layer_print(NCLayers layers); // prints all layers
 
-NCPerceptron perceptron_allocate(size_t number_of_layers, const size_t* neurons, const function_type* activations); // ...
-void perceptron_print(NCPerceptron model); // ...
+NCPerceptron perceptron_allocate(size_t number_of_layers, const size_t* neurons, const function_type* activations); // allocates in memory a Perceptron model object with given number of layers and activation functions, weight allocates and initialize with random numbers automatically
+void perceptron_print(NCPerceptron model); // prints a given Perceptron model
+NCMatrix perceptron_layer_at(NCPerceptron model, size_t index); // returns a Perceptron Layer Matrix at given index
+NCMatrix perceptron_weight_at(NCPerceptron model, size_t index); // returns a Perceptron Weight Matrix at given index
+size_t perceptron_number_of_layers(NCPerceptron model); // returns a Perceptron Layers number
 
 double activation_identity(double x); // returns a same number
 
