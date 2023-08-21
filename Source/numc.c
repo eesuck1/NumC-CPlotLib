@@ -87,7 +87,7 @@ double matrix_at(NCMatrix matrix, size_t row, size_t column)
 
 void matrix_dot(NCMatrix destination, NCMatrix first, NCMatrix second)
 {
-    assert((first.columns == second.rows) && "First columns must be the sane as second rows");
+    assert((first.columns == second.rows) && "First columns must be the same as second rows");
     assert((first.rows == destination.rows && second.columns == destination.columns) && "Destination dimensions must be correct!");
 
     for (size_t i = 0; i < destination.rows; ++i)
@@ -116,6 +116,21 @@ void matrix_sum(NCMatrix destination, NCMatrix first, NCMatrix second)
             MAT_AT(destination, i, j) = MAT_AT(first, i, j) + MAT_AT(second, i, j);
         }
     }
+}
+
+double matrix_sum_of_values(NCMatrix matrix)
+{
+    double sum = 0;
+
+    for (size_t i = 0; i < matrix.rows; ++i)
+    {
+        for (size_t j = 0; j < matrix.columns; ++j)
+        {
+            sum += MAT_AT(matrix, i, j);
+        }
+    }
+
+    return sum;
 }
 
 void matrix_scale(NCMatrix matrix, double scalar)
@@ -152,7 +167,7 @@ void matrix_random(NCMatrix matrix, unsigned int random_state)
     {
         for (size_t j = 0; j < matrix.columns; ++j)
         {
-            MAT_AT(matrix, i, j) = (double)rand() / RAND_MAX;
+            MAT_AT(matrix, i, j) = 2 * (double)rand() / RAND_MAX - 1;
         }
     }
 }
@@ -177,6 +192,14 @@ void apply_to_matrix(NCMatrix matrix, function_type function)
             MAT_AT(matrix, i, j) = function(MAT_AT(matrix, i, j));
         }
     }
+}
+
+void matrix_transpose(NCMatrix* matrix)
+{
+    size_t rows = matrix->rows;
+
+    matrix->rows = matrix->columns;
+    matrix->columns = rows;
 }
 
 void matrix_delete(NCMatrix matrix)
@@ -355,6 +378,8 @@ void layer_initialize(NCLayers layers, const size_t* neurons, const function_typ
     }
 }
 
+void layer_set_data_at(NCLayers layers, size_t index, NCMatrix data) { layers.matrices[index] = data; }
+
 void layer_print(NCLayers layers)
 {
     for (size_t i = 0; i < layers.layers; ++i)
@@ -364,8 +389,8 @@ void layer_print(NCLayers layers)
 }
 
 NCMatrix layer_at(NCLayers layers, size_t index) { return layers.matrices[index]; }
-size_t layer_at_length(NCLayers layers, size_t index) { return layer_at(layers, index).columns; }
 
+size_t layer_at_length(NCLayers layers, size_t index) { return layer_at(layers, index).columns; }
 NCPerceptron perceptron_allocate(size_t number_of_layers, const size_t *neurons, const function_type* activations)
 {
     NCPerceptron result;
@@ -393,6 +418,8 @@ NCPerceptron perceptron_allocate(size_t number_of_layers, const size_t *neurons,
     return result;
 }
 
+void perceptron_set_input(NCPerceptron model, NCMatrix input_data) { layer_set_data_at(model.layers, 0, input_data); }
+
 void perceptron_print(NCPerceptron model)
 {
     for (size_t i = 0; i  < model.weights.weights; ++i)
@@ -406,9 +433,21 @@ void perceptron_print(NCPerceptron model)
     printf("Layer %zu\n", perceptron_number_of_layers(model) - 1);
     matrix_print(perceptron_layer_at(model, perceptron_number_of_layers(model) - 1));
 }
-
 NCMatrix perceptron_layer_at(NCPerceptron model, size_t index) { return model.layers.matrices[index]; }
+
 NCMatrix perceptron_weight_at(NCPerceptron model, size_t index) { return model.weights.matrices[index]; }
+function_type perceptron_activation_at(NCPerceptron model, size_t index) { return model.layers.activations[index]; }
+
 size_t perceptron_number_of_layers(NCPerceptron model) { return model.layers.layers; }
+void perceptron_forward(NCPerceptron model)
+{
+    for (size_t i = 1; i < perceptron_number_of_layers(model); ++i)
+    {
+        matrix_dot(perceptron_layer_at(model, i),perceptron_layer_at(model, i - 1),perceptron_weight_at(model, i - 1));
+        apply_to_matrix(perceptron_layer_at(model, i), perceptron_activation_at(model, i));
+    }
+}
 
 double activation_identity(double x) { return x; }
+
+double activation_leaky_relu(double x) { return fmax(0.01 * x, x); }

@@ -3,6 +3,7 @@
 
 #include <assert.h>
 #include <stdio.h>
+#include <string.h>
 #include <math.h>
 #include <malloc.h>
 
@@ -60,11 +61,13 @@ void matrix_initialize_v(NCMatrix matrix, const NCVector* initializer, size_t in
 double matrix_at(NCMatrix matrix, size_t row, size_t column); // returns an element at given position
 void matrix_dot(NCMatrix destination, NCMatrix first, NCMatrix second); // produces a matrix dot product between first and second and puts into destination
 void matrix_sum(NCMatrix destination, NCMatrix first, NCMatrix second); // produces a matrix sum between first and second and puts into destination
+double matrix_sum_of_values(NCMatrix matrix); // returns a sum of all values in matrix;
 void matrix_scale(NCMatrix matrix, double scalar); // multiplies a matrix by gives scalar
 void matrix_print(NCMatrix matrix); // prints a matrix
-void matrix_random(NCMatrix matrix, unsigned int random_state); // feels a matrix with random numbers in range (0, 1)
+void matrix_random(NCMatrix matrix, unsigned int random_state); // feels a matrix with random numbers in range (-1, 1)
 void matrix_zero(NCMatrix matrix); // feels a matrix with 0.0
-void apply_to_matrix(NCMatrix matrix, function_type function); // apply a given function to each element of a matrix ( inplace )
+void apply_to_matrix(NCMatrix matrix, function_type function); // apply a given function to each element of a Matrix in-place
+void matrix_transpose(NCMatrix* matrix); // transpose the given by reference Matrix in-place
 
 void matrix_delete(NCMatrix matrix); // deletes the matrix
 NCVector vector_allocate(size_t points); // allocates in memory a vector object and returns NCVector structure
@@ -87,17 +90,22 @@ void weights_print(NCWeights weights); // print the weights
 
 NCLayers layer_allocate(size_t number_of_layers); // allocates in memory a Layer objects
 void layer_initialize(NCLayers layers, const size_t* neurons, const function_type* activations); // Initialize a Layers, with lengths from neurons array, by 0.0 and given functions
+void layer_set_data_at(NCLayers layers, size_t index, NCMatrix data);
 NCMatrix layer_at(NCLayers layers, size_t index); // returns a Layer Matrix at given index
 size_t layer_at_length(NCLayers layers, size_t index); // returns a length of Layer Matrix at given index
 void layer_print(NCLayers layers); // prints all layers
 
 NCPerceptron perceptron_allocate(size_t number_of_layers, const size_t* neurons, const function_type* activations); // allocates in memory a Perceptron model object with given number of layers and activation functions, weight allocates and initialize with random numbers automatically
+void perceptron_set_input(NCPerceptron model, NCMatrix input_data); // sets an input data
 void perceptron_print(NCPerceptron model); // prints a given Perceptron model
 NCMatrix perceptron_layer_at(NCPerceptron model, size_t index); // returns a Perceptron Layer Matrix at given index
 NCMatrix perceptron_weight_at(NCPerceptron model, size_t index); // returns a Perceptron Weight Matrix at given index
+function_type perceptron_activation_at(NCPerceptron model, size_t index); // returns an activation function of Layer at given index
 size_t perceptron_number_of_layers(NCPerceptron model); // returns a Perceptron Layers number
+void perceptron_forward(NCPerceptron model); // forwarding a model
 
 double activation_identity(double x); // returns a same number
+double activation_leaky_relu(double x); // leaky ReLU activation function
 
 double* linspace(double start, double end, size_t amount); // returns a linear spaced segment
 double* apply_to_array(const double* array, size_t length, function_type function); // apply a given function to given array and returns a copy
