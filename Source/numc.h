@@ -14,7 +14,7 @@
 /*
  *
  * TODO: |--------------------------------------------------------------------------------------------|
- * TODO: |   create forwarding and backpropagation                                                    |
+ * TODO: |   create backpropagation and optimization                                                  |
  * TODO: |   optimize perceptron allocation                                                           |
  * TODO: |--------------------------------------------------------------------------------------------|
  *
@@ -80,7 +80,6 @@ void vector_scale(NCVector vector, double scalar); // multiplies a vector by giv
 void vector_print(NCVector vector); // prints a vector
 void vector_random(NCVector vector, unsigned int random_state); // feels a vector with random numbers in range (0, 1)
 void apply_to_vector(NCVector vector, function_type function); // // apply a given function to each element of a vector ( inplace )
-
 void vector_delete(NCVector vector); // deletes the vector
 
 NCWeights weights_allocate(size_t initializer_size); // allocates in memory a weights object and returns NCModel structure
