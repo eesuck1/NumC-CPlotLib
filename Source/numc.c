@@ -389,31 +389,25 @@ void layer_print(NCLayers layers)
 }
 
 NCMatrix layer_at(NCLayers layers, size_t index) { return layers.matrices[index]; }
-
 size_t layer_at_length(NCLayers layers, size_t index) { return layer_at(layers, index).columns; }
+
 NCPerceptron perceptron_allocate(size_t number_of_layers, const size_t *neurons, const function_type* activations)
 {
     NCPerceptron result;
 
-    NCLayers layers = layer_allocate(number_of_layers);
-    layer_initialize(layers, neurons, activations);
-
-    result.layers = layers;
+    result.layers = layer_allocate(number_of_layers);
+    layer_initialize(result.layers, neurons, activations);
 
     NCMatrix matrices[number_of_layers - 1];
 
     for (size_t i = 0; i < number_of_layers - 1; ++i)
     {
-        NCMatrix matrix = matrix_allocate(layer_at_length(layers, i), layer_at_length(layers, i + 1));
-        matrix_random(matrix, 12);
-
-        matrices[i] = matrix;
+        matrices[i] = matrix_allocate(neurons[i], neurons[i + 1]);
+        matrix_random(matrices[i], time(NULL));
     }
 
-    NCWeights weights = weights_allocate(number_of_layers - 1);
-    weights_initialize(weights, matrices, number_of_layers - 1);
-
-    result.weights = weights;
+    result.weights = weights_allocate(number_of_layers - 1);
+    weights_initialize(result.weights, matrices, number_of_layers - 1);
 
     return result;
 }
