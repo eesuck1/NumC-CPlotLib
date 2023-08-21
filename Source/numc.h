@@ -55,6 +55,7 @@ typedef struct
     NCWeights weights;
 } NCPerceptron; // ...
 
+long long get_seed(); // returns a seed for random number generation
 
 NCMatrix matrix_allocate(size_t rows, size_t columns); // allocates in memory a matrix object and returns NCMatrix structure
 void matrix_initialize(NCMatrix matrix, const double* initializer, const size_t* initializer_size); // initialize a matrix by a given initializer array passed by reference to first element ( for example &array[0][0] )
@@ -65,7 +66,7 @@ void matrix_sum(NCMatrix destination, NCMatrix first, NCMatrix second); // produ
 double matrix_sum_of_values(NCMatrix matrix); // returns a sum of all values in matrix;
 void matrix_scale(NCMatrix matrix, double scalar); // multiplies a matrix by gives scalar
 void matrix_print(NCMatrix matrix); // prints a matrix
-void matrix_random(NCMatrix matrix, unsigned int random_state); // feels a matrix with random numbers in range (-1, 1)
+void matrix_random(NCMatrix matrix); // feels a matrix with random numbers in range (-1, 1)
 void matrix_zero(NCMatrix matrix); // feels a matrix with 0.0
 void apply_to_matrix(NCMatrix matrix, function_type function); // apply a given function to each element of a Matrix in-place
 void matrix_transpose(NCMatrix* matrix); // transpose the given by reference Matrix in-place
@@ -79,7 +80,7 @@ double vector_magnitude(NCVector vector); // returns a vector magnitude
 void vector_sum(NCVector destination, NCVector first, NCVector second); // produces a vector sum between first and second and puts into destination
 void vector_scale(NCVector vector, double scalar); // multiplies a vector by giver scalar
 void vector_print(NCVector vector); // prints a vector
-void vector_random(NCVector vector, unsigned int random_state); // feels a vector with random numbers in range (0, 1)
+void vector_random(NCVector vector); // feels a vector with random numbers in range (0, 1)
 void apply_to_vector(NCVector vector, function_type function); // // apply a given function to each element of a vector ( inplace )
 void vector_delete(NCVector vector); // deletes the vector
 

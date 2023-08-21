@@ -1,5 +1,12 @@
 #include "numc.h"
 
+long long get_seed()
+{
+    static long long SEED = 0;
+
+    return time(NULL) + SEED++;
+}
+
 double* linspace(double start, double end, size_t amount)
 {
     double *result = (double*)malloc(amount * sizeof(double));
@@ -159,9 +166,9 @@ void matrix_print(NCMatrix matrix)
     printf("\n");
 }
 
-void matrix_random(NCMatrix matrix, unsigned int random_state)
+void matrix_random(NCMatrix matrix)
 {
-    srand(random_state);
+    srand(get_seed());
 
     for (size_t i = 0; i < matrix.rows; ++i)
     {
@@ -290,9 +297,9 @@ void vector_print(NCVector vector)
     printf("\n");
 }
 
-void vector_random(NCVector vector, unsigned int random_state)
+void vector_random(NCVector vector)
 {
-    srand(random_state);
+    srand(get_seed());
 
     for (size_t i = 0; i < vector.length; ++i)
     {
@@ -378,7 +385,24 @@ void layer_initialize(NCLayers layers, const size_t* neurons, const function_typ
     }
 }
 
-void layer_set_data_at(NCLayers layers, size_t index, NCMatrix data) { layers.matrices[index] = data; }
+NCMatrix layer_at(NCLayers layers, size_t index)
+{
+    assert(index < layers.layers && "Layers index out of bounds!");
+
+    return layers.matrices[index];
+}
+
+void layer_set_data_at(NCLayers layers, size_t index, NCMatrix data)
+{
+    assert((layers.matrices[index].columns == data.columns && layers.matrices[index].rows == data.rows) && "Layer Matrix and given Matrix are incompatible");
+
+    layers.matrices[index] = data;
+}
+
+size_t layer_at_length(NCLayers layers, size_t index)
+{
+    return layer_at(layers, index).columns;
+}
 
 void layer_print(NCLayers layers)
 {
@@ -387,9 +411,6 @@ void layer_print(NCLayers layers)
         matrix_print(layers.matrices[i]);
     }
 }
-
-NCMatrix layer_at(NCLayers layers, size_t index) { return layers.matrices[index]; }
-size_t layer_at_length(NCLayers layers, size_t index) { return layer_at(layers, index).columns; }
 
 NCPerceptron perceptron_allocate(size_t number_of_layers, const size_t *neurons, const function_type* activations)
 {
@@ -403,7 +424,7 @@ NCPerceptron perceptron_allocate(size_t number_of_layers, const size_t *neurons,
     for (size_t i = 0; i < number_of_layers - 1; ++i)
     {
         matrices[i] = matrix_allocate(neurons[i], neurons[i + 1]);
-        matrix_random(matrices[i], time(NULL));
+        matrix_random(matrices[i]);
     }
 
     result.weights = weights_allocate(number_of_layers - 1);
@@ -412,14 +433,13 @@ NCPerceptron perceptron_allocate(size_t number_of_layers, const size_t *neurons,
     return result;
 }
 
-void perceptron_set_input(NCPerceptron model, NCMatrix input_data) { layer_set_data_at(model.layers, 0, input_data); }
-
 void perceptron_print(NCPerceptron model)
 {
     for (size_t i = 0; i  < model.weights.weights; ++i)
     {
         printf("Layer %zu\n", i);
         matrix_print(perceptron_layer_at(model, i));
+
         printf("Weights %zu-%zu\n", i, i + 1);
         matrix_print(perceptron_weight_at(model, i));
     }
@@ -427,12 +447,38 @@ void perceptron_print(NCPerceptron model)
     printf("Layer %zu\n", perceptron_number_of_layers(model) - 1);
     matrix_print(perceptron_layer_at(model, perceptron_number_of_layers(model) - 1));
 }
-NCMatrix perceptron_layer_at(NCPerceptron model, size_t index) { return model.layers.matrices[index]; }
 
-NCMatrix perceptron_weight_at(NCPerceptron model, size_t index) { return model.weights.matrices[index]; }
-function_type perceptron_activation_at(NCPerceptron model, size_t index) { return model.layers.activations[index]; }
+void perceptron_set_input(NCPerceptron model, NCMatrix input_data)
+{
+    layer_set_data_at(model.layers, 0, input_data);
+}
 
-size_t perceptron_number_of_layers(NCPerceptron model) { return model.layers.layers; }
+NCMatrix perceptron_layer_at(NCPerceptron model, size_t index)
+{
+    assert(index < perceptron_number_of_layers(model) && "Perceptron model Layer index out of bounds!");
+
+    return model.layers.matrices[index];
+}
+
+NCMatrix perceptron_weight_at(NCPerceptron model, size_t index)
+{
+    assert(index < model.weights.weights && "Perceptron model Weight index out of bounds!");
+
+    return model.weights.matrices[index];
+}
+
+function_type perceptron_activation_at(NCPerceptron model, size_t index)
+{
+    assert(index < perceptron_number_of_layers(model) && "Perceptron model Activation index out of bounds!");
+
+    return model.layers.activations[index];
+}
+
+size_t perceptron_number_of_layers(NCPerceptron model)
+{
+    return model.layers.layers;
+}
+
 void perceptron_forward(NCPerceptron model)
 {
     for (size_t i = 1; i < perceptron_number_of_layers(model); ++i)
