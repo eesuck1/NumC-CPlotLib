@@ -399,10 +399,11 @@ void perceptron_print(NCPerceptron model)
     {
         printf("Layer %zu\n", i);
         matrix_print(perceptron_layer_at(model, i));
-        printf("Weights %zu\n", i);
+        printf("Weights %zu-%zu\n", i, i + 1);
         matrix_print(perceptron_weight_at(model, i));
     }
 
+    printf("Layer %zu\n", perceptron_number_of_layers(model) - 1);
     matrix_print(perceptron_layer_at(model, perceptron_number_of_layers(model) - 1));
 }
 
