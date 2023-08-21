@@ -373,9 +373,9 @@ size_t layer_at_length(NCLayers layers, size_t index)
     return layer_at(layers, index).columns;
 }
 
-NCMPerceptron perceptron_allocate(size_t number_of_layers, const size_t *neurons, const function_type* activations)
+NCPerceptron perceptron_allocate(size_t number_of_layers, const size_t *neurons, const function_type* activations)
 {
-    NCMPerceptron result;
+    NCPerceptron result;
 
     NCLayers layers = layer_allocate(number_of_layers);
     layer_initialize(layers, neurons, activations);
@@ -400,7 +400,7 @@ NCMPerceptron perceptron_allocate(size_t number_of_layers, const size_t *neurons
     return result;
 }
 
-void perceptron_print(NCMPerceptron model)
+void perceptron_print(NCPerceptron model)
 {
     // TODO: optimize getting a layer and weight matrix by create separate functions
 
