@@ -7,7 +7,7 @@
 #include <malloc.h>
 
 #define MAT_AT(matrix, i, j) (matrix).numbers[(i) * (matrix).columns + (j)]
-#define INITIALIZER_AT(initializer, columns, i, j) (initializer)[(i) * (columns) + j]
+#define INITIALIZER_AT(initializer, columns, i, j) (initializer)[(i) * (columns) + (j)]
 #define VEC_AT(vector, i) (vector).numbers[(i)]
 
 /*
