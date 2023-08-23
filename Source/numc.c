@@ -523,7 +523,7 @@ void perceptron_forward(NCPerceptron model)
 {
     for (size_t i = 1; i < perceptron_number_of_layers(model); ++i)
     {
-        matrix_dot(perceptron_layer_at(model, i),perceptron_layer_at(model, i - 1),perceptron_weight_at(model, i - 1));
+        matrix_dot(perceptron_layer_at(model, i), perceptron_layer_at(model, i - 1), perceptron_weight_at(model, i - 1));
         apply_to_matrix(perceptron_layer_at(model, i), perceptron_activation_at(model, i));
     }
 }
