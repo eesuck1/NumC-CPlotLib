@@ -84,6 +84,20 @@ void matrix_initialize_v(NCMatrix matrix, const NCVector *initializer, size_t in
     }
 }
 
+void matrix_copy(NCMatrix destination, NCMatrix source)
+{
+    assert(destination.rows == source.rows && "Destination and Source row lengths must be the same!");
+    assert(destination.columns == source.columns && "Destination and Source column lengths must be the same!");
+
+    for (size_t i = 0; i < destination.rows; ++i)
+    {
+        for (size_t j = 0; j < destination.columns; ++j)
+        {
+            MAT_AT(destination, i, j) = MAT_AT(source, i, j);
+        }
+    }
+}
+
 double matrix_at(NCMatrix matrix, size_t row, size_t column)
 {
     assert((row < matrix.rows) && "Matrix row out of bounds!");
@@ -324,7 +338,7 @@ NCWeights weights_allocate(size_t number_of_layers)
 {
     NCWeights result;
 
-    result.weights = number_of_layers;
+    result.weights_amount = number_of_layers;
     result.matrices = malloc(sizeof(*result.matrices) * number_of_layers);
 
     assert(result.matrices != NULL);
@@ -334,7 +348,7 @@ NCWeights weights_allocate(size_t number_of_layers)
 
 void weights_initialize(NCWeights weights, const NCMatrix *initializer_list, size_t initializer_size)
 {
-    assert((weights.weights == initializer_size) && "Model and Initializer lengths must be the same!");
+    assert((weights.weights_amount == initializer_size) && "Model and Initializer lengths must be the same!");
 
     for (size_t i = 0; i < initializer_size; ++i)
     {
@@ -344,14 +358,14 @@ void weights_initialize(NCWeights weights, const NCMatrix *initializer_list, siz
 
 NCMatrix weights_at(NCWeights weights, size_t position)
 {
-    assert((position < weights.weights) && "Model out of bounds!");
+    assert((position < weights.weights_amount) && "Model out of bounds!");
 
     return weights.matrices[position];
 }
 
 void weights_print(NCWeights weights)
 {
-    for (size_t i = 0; i < weights.weights; ++i)
+    for (size_t i = 0; i < weights.weights_amount; ++i)
     {
         printf("Layer %zu\n\n", i);
 
@@ -359,37 +373,63 @@ void weights_print(NCWeights weights)
     }
 }
 
-NCLayers layer_allocate(size_t number_of_layers)
+NCActivations activations_allocate(size_t number_of_activations)
 {
-    NCLayers result;
+    NCActivations result;
 
-    result.layers = number_of_layers;
-    result.matrices = malloc(sizeof(*result.matrices) * number_of_layers);
-    result.activations = malloc(sizeof(*result.activations) * number_of_layers);
+    result.activations_amount = number_of_activations;
+    result.activations = malloc(sizeof(*result.activations) * number_of_activations);
+    result.activations_derivatives = malloc(sizeof(*result.activations_derivatives) * number_of_activations);
 
-    assert(result.matrices != NULL);
     assert(result.activations != NULL);
+    assert(result.activations_derivatives != NULL);
 
     return result;
 }
 
-void layer_initialize(NCLayers layers, const size_t* neurons, const function_type* activations)
+void activations_initialize(NCActivations structure, function_type *activations, function_type *activation_derivatives)
 {
-    for (size_t i = 0; i < layers.layers; ++i)
+    structure.activations = activations;
+    structure.activations_derivatives = activation_derivatives;
+}
+
+NCLayers layer_allocate(size_t number_of_layers)
+{
+    NCLayers result;
+
+    result.layers_amount = number_of_layers;
+    result.matrices = malloc(sizeof(*result.matrices) * number_of_layers);
+    result.activations = activations_allocate(number_of_layers);
+
+    assert(result.matrices != NULL);
+
+    return result;
+}
+
+void layer_initialize(NCLayers layers, const size_t* neurons, NCActivations structure)
+{
+    for (size_t i = 0; i < layers.layers_amount; ++i)
     {
         NCMatrix matrix = matrix_allocate(1, neurons[i]);
         matrix_zero(matrix);
 
         layers.matrices[i] = matrix;
-        layers.activations[i] = activations[i];
+        layers.activations.activations[i] = structure.activations[i];
     }
 }
 
 NCMatrix layer_at(NCLayers layers, size_t index)
 {
-    assert(index < layers.layers && "Layers index out of bounds!");
+    assert(index < layers.layers_amount && "Layers index out of bounds!");
 
     return layers.matrices[index];
+}
+
+function_type layer_activation_at(NCLayers layers, size_t index)
+{
+    assert((index < layers.layers_amount) && "Layer Activation out of bounds!");
+
+    return layers.activations.activations[index];
 }
 
 void layer_set_data_at(NCLayers layers, size_t index, NCMatrix data)
@@ -406,18 +446,18 @@ size_t layer_at_length(NCLayers layers, size_t index)
 
 void layer_print(NCLayers layers)
 {
-    for (size_t i = 0; i < layers.layers; ++i)
+    for (size_t i = 0; i < layers.layers_amount; ++i)
     {
         matrix_print(layers.matrices[i]);
     }
 }
 
-NCPerceptron perceptron_allocate(size_t number_of_layers, const size_t *neurons, const function_type* activations)
+NCPerceptron perceptron_allocate(size_t number_of_layers, const size_t *neurons, NCActivations structure)
 {
     NCPerceptron result;
 
     result.layers = layer_allocate(number_of_layers);
-    layer_initialize(result.layers, neurons, activations);
+    layer_initialize(result.layers, neurons, structure);
 
     NCMatrix matrices[number_of_layers - 1];
 
@@ -435,7 +475,7 @@ NCPerceptron perceptron_allocate(size_t number_of_layers, const size_t *neurons,
 
 void perceptron_print(NCPerceptron model)
 {
-    for (size_t i = 0; i  < model.weights.weights; ++i)
+    for (size_t i = 0; i  < model.weights.weights_amount; ++i)
     {
         printf("Layer %zu\n", i);
         matrix_print(perceptron_layer_at(model, i));
@@ -462,7 +502,7 @@ NCMatrix perceptron_layer_at(NCPerceptron model, size_t index)
 
 NCMatrix perceptron_weight_at(NCPerceptron model, size_t index)
 {
-    assert(index < model.weights.weights && "Perceptron model Weight index out of bounds!");
+    assert(index < model.weights.weights_amount && "Perceptron model Weight index out of bounds!");
 
     return model.weights.matrices[index];
 }
@@ -471,12 +511,12 @@ function_type perceptron_activation_at(NCPerceptron model, size_t index)
 {
     assert(index < perceptron_number_of_layers(model) && "Perceptron model Activation index out of bounds!");
 
-    return model.layers.activations[index];
+    return layer_activation_at(model.layers, index);
 }
 
 size_t perceptron_number_of_layers(NCPerceptron model)
 {
-    return model.layers.layers;
+    return model.layers.layers_amount;
 }
 
 void perceptron_forward(NCPerceptron model)
@@ -488,6 +528,26 @@ void perceptron_forward(NCPerceptron model)
     }
 }
 
+void perceptron_backpropagation(NCPerceptron model)
+{
+    // ...
+}
+
 double activation_identity(double x) { return x; }
 
+double activation_identity_derivative(double x) { return 1; }
+
 double activation_leaky_relu(double x) { return fmax(0.01 * x, x); }
+
+double activation_leaky_relu_derivative(double x) { return x < 0 ? 0.01 : 1; }
+
+NCMatrix activation_softmax(NCMatrix matrix)
+{
+    NCMatrix result = matrix_allocate(matrix.rows, matrix.columns);
+    matrix_copy(result, matrix);
+
+    apply_to_matrix(result, exp);
+    matrix_scale(result, 1 / matrix_sum_of_values(result));
+
+    return result;
+}
