@@ -139,6 +139,22 @@ void matrix_sum(NCMatrix destination, NCMatrix first, NCMatrix second)
     }
 }
 
+
+void matrix_difference(NCMatrix destination, NCMatrix first, NCMatrix second)
+{
+    assert((first.rows == second.rows && second.rows ==  destination.rows) && "Matrix rows must be the same!");
+    assert((first.columns == second.columns && second.columns ==  destination.columns) && "Matrix columns must be the same!");
+
+    for (size_t i = 0; i < destination.rows; ++i)
+    {
+        for (size_t j = 0; j < destination.columns; ++j)
+        {
+            MAT_AT(destination, i, j) = MAT_AT(first, i, j) - MAT_AT(second, i, j);
+        }
+    }
+}
+
+
 double matrix_sum_of_values(NCMatrix matrix)
 {
     double sum = 0;
@@ -215,13 +231,22 @@ void apply_to_matrix(NCMatrix matrix, function_type function)
     }
 }
 
-void matrix_transpose(NCMatrix* matrix)
+void matrix_transpose_inplace(NCMatrix* matrix)
 {
     size_t rows = matrix->rows;
 
     matrix->rows = matrix->columns;
     matrix->columns = rows;
 }
+
+NCMatrix matrix_transpose(NCMatrix matrix)
+{
+    NCMatrix result = matrix_allocate(matrix.columns, matrix.rows);
+    memcpy(result.numbers, matrix.numbers, matrix.rows * matrix.columns);
+
+    return result;
+}
+
 
 void matrix_delete(NCMatrix matrix)
 {
@@ -519,18 +544,42 @@ size_t perceptron_number_of_layers(NCPerceptron model)
     return model.layers.layers_amount;
 }
 
-void perceptron_forward(NCPerceptron model)
+void perceptron_train(NCPerceptron model, NCMatrix* train, size_t train_amount, NCMatrix* labels, size_t labels_amount)
 {
-    for (size_t i = 1; i < perceptron_number_of_layers(model); ++i)
-    {
-        matrix_dot(perceptron_layer_at(model, i), perceptron_layer_at(model, i - 1), perceptron_weight_at(model, i - 1));
-        apply_to_matrix(perceptron_layer_at(model, i), perceptron_activation_at(model, i));
-    }
-}
+    assert((train_amount == labels_amount) && "Train data samples amount must be the same as Labels amount");
 
-void perceptron_backpropagation(NCPerceptron model)
-{
-    // ...
+    size_t layers_amount = perceptron_number_of_layers(model);
+
+    for (size_t i = 0; i < train_amount; ++i)
+    {
+        assert((perceptron_layer_at(model, 0).rows == train[i].rows) && "Train data rows and Input Layer rows are incompatible");
+        assert((perceptron_layer_at(model, 0).columns == train[i].columns) && "Train data columns and Input Layer columns are incompatible");
+        assert((perceptron_layer_at(model, layers_amount - 1).rows == labels[i].rows) && "Label rows and Input Layer rows are incompatible");
+        assert((perceptron_layer_at(model, layers_amount - 1).columns == labels[i].columns) && "Label columns and Input Layer columns are incompatible");
+    }
+
+//    NCLayers before_activation = layer_allocate(layers_amount);
+    double error = 0.0;
+
+    for (size_t sample_index = 0; sample_index < train_amount; ++sample_index)
+    {
+        perceptron_set_input(model, train[sample_index]);
+//        layer_set_data_at(before_activation, 0, train[sample_index]);
+
+        for (size_t epoch = 0; epoch < 100; ++epoch)
+        {
+            for (size_t i = 1; i < layers_amount; ++i)
+            {
+                matrix_dot(perceptron_layer_at(model, i), perceptron_layer_at(model, i - 1), perceptron_weight_at(model, i - 1));
+//                layer_set_data_at(before_activation, i, perceptron_layer_at(model, i));
+                apply_to_matrix(perceptron_layer_at(model, i), perceptron_activation_at(model, i));
+            }
+
+            error = mean_squared_error(perceptron_layer_at(model, layers_amount - 1), labels[sample_index]);
+
+            printf("Epochs: %zu Error: %f", epoch, error);
+        }
+    }
 }
 
 double activation_identity(double x) { return x; }
@@ -550,4 +599,40 @@ NCMatrix activation_softmax(NCMatrix matrix)
     matrix_scale(result, 1 / matrix_sum_of_values(result));
 
     return result;
+}
+
+double mean_squared_error(NCMatrix predicted, NCMatrix real)
+{
+    assert(predicted.rows == real.rows && "Predicted and True row lengths must be the same!");
+    assert(predicted.columns == real.columns && "Predicted and True column lengths must be the same!");
+
+    double error = 0;
+
+    for (size_t i = 0; i < predicted.rows; ++i)
+    {
+        for (size_t j = 0; j < predicted.columns; ++j)
+        {
+            error += pow(MAT_AT(predicted, i, j) - MAT_AT(real, i, j), 2);
+        }
+    }
+
+    return error / (double)(predicted.columns * predicted.rows);
+}
+
+double mean_squared_error_derivative(NCMatrix predicted, NCMatrix real)
+{
+    assert(predicted.rows == real.rows && "Predicted and True row lengths must be the same!");
+    assert(predicted.columns == real.columns && "Predicted and True column lengths must be the same!");
+
+    double error = 0;
+
+    for (size_t i = 0; i < predicted.rows; ++i)
+    {
+        for (size_t j = 0; j < predicted.columns; ++j)
+        {
+            error += 2 * (MAT_AT(predicted, i, j) - MAT_AT(real, i, j));
+        }
+    }
+
+    return error / (double)(predicted.columns * predicted.rows);
 }

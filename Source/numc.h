@@ -16,6 +16,7 @@
  *
  * TODO: |--------------------------------------------------------------------------------------------|
  * TODO: |   create backpropagation and optimization                                                  |
+ * TODO: |   this is where the mess starts                                                            |
  * TODO: |--------------------------------------------------------------------------------------------|
  *
  */
@@ -70,13 +71,15 @@ void matrix_copy(NCMatrix destination, NCMatrix source); // copies data from sou
 double matrix_at(NCMatrix matrix, size_t row, size_t column); // returns an element at given position
 void matrix_dot(NCMatrix destination, NCMatrix first, NCMatrix second); // produces a matrix dot product between first and second and puts into destination
 void matrix_sum(NCMatrix destination, NCMatrix first, NCMatrix second); // produces a matrix sum between first and second and puts into destination
+void matrix_difference(NCMatrix destination, NCMatrix first, NCMatrix second);
 double matrix_sum_of_values(NCMatrix matrix); // returns a sum of all values in matrix;
 void matrix_scale(NCMatrix matrix, double scalar); // multiplies a matrix by gives scalar
 void matrix_print(NCMatrix matrix); // prints a matrix
 void matrix_random(NCMatrix matrix); // feels a matrix with random numbers in range (-1, 1)
 void matrix_zero(NCMatrix matrix); // feels a matrix with 0.0
 void apply_to_matrix(NCMatrix matrix, function_type function); // apply a given function to each element of a Matrix in-place
-void matrix_transpose(NCMatrix* matrix); // transpose the given by reference Matrix in-place
+NCMatrix matrix_transpose(NCMatrix matrix); // ...
+void matrix_transpose_inplace(NCMatrix* matrix); // transpose the given by reference Matrix in-place
 
 void matrix_delete(NCMatrix matrix); // deletes the matrix
 NCVector vector_allocate(size_t points); // allocates in memory a vector object and returns NCVector structure
@@ -114,14 +117,15 @@ NCMatrix perceptron_layer_at(NCPerceptron model, size_t index); // returns a Per
 NCMatrix perceptron_weight_at(NCPerceptron model, size_t index); // returns a Perceptron Weight Matrix at given index
 function_type perceptron_activation_at(NCPerceptron model, size_t index); // returns an activation function of Layer at given index
 size_t perceptron_number_of_layers(NCPerceptron model); // returns a Perceptron Layers number
-void perceptron_forward(NCPerceptron model); // forwarding a model
-void perceptron_backpropagation(NCPerceptron model); // backpropagation of a Perceptron model
+void perceptron_train(NCPerceptron model, NCMatrix* train, size_t train_amount, NCMatrix* labels, size_t labels_amount); // forwarding a model
 
 double activation_identity(double x); // returns a same number
 double activation_identity_derivative(double x); // identity activation function derivative
 double activation_leaky_relu(double x); // leaky ReLU activation function
 double activation_leaky_relu_derivative(double x); // leaky ReLU activation function derivative
 NCMatrix activation_softmax(NCMatrix matrix); // returns a softmax Matrix
+double mean_squared_error(NCMatrix predicted, NCMatrix real); // returns a mean squared error
+double mean_squared_error_derivative(NCMatrix predicted, NCMatrix real);
 
 double* linspace(double start, double end, size_t amount); // returns a linear spaced segment
 double* apply_to_array(const double* array, size_t length, function_type function); // apply a given function to given array and returns a copy
