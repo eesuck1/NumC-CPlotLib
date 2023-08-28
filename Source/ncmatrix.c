@@ -1,6 +1,6 @@
 #include "ncmatrix.h"
 
-long long get_seed()
+static long long get_seed()
 {
     static long long SEED = 0;
 

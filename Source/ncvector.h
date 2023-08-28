@@ -12,6 +12,7 @@ typedef double (*function_type)(double x);
 
 #include <assert.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <math.h>
 #include <malloc.h>
 #include <time.h>
@@ -22,10 +23,7 @@ typedef struct
     double* numbers;
 } NCVector; // NumC Vector structure that contain: length of vector and pointer to data
 
-#ifndef GET_SEED
-#define GET_SEED
-long long get_seed(); // returns a seed for random number generation
-#endif // GET_SEED
+static long long get_seed(); // returns a seed for random number generation
 
 NCVector vector_allocate(size_t points); // allocates in memory a vector object and returns NCVector structure
 void vector_initialize(NCVector vector, const double* initializer, size_t initializer_size); // / initialize a vector by a given initializer array

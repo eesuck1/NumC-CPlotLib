@@ -18,6 +18,7 @@ typedef double (*function_type)(double x);
 #include <malloc.h>
 #include <stdio.h>
 #include <time.h>
+#include <string.h>
 
 #include "ncvector.h"
 
@@ -28,10 +29,7 @@ typedef struct
     double* numbers;
 } NCMatrix; // NumC Matrix structure that contain: amount of column, amount of rows and pointer to data
 
-#ifndef GET_SEED
-#define GET_SEED
-long long get_seed(); // returns a seed for random number generation
-#endif // GET_SEED
+static long long get_seed(); // returns a seed for random number generation
 
 NCMatrix matrix_allocate(size_t rows, size_t columns); // allocates in memory a matrix object and returns NCMatrix structure
 void matrix_initialize(NCMatrix matrix, const double* initializer, const size_t* initializer_size); // initialize a matrix by a given initializer array passed by reference to first element ( for example &array[0][0] )

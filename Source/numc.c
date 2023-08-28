@@ -30,10 +30,6 @@ double* apply_to_array(const double *array, const size_t length, function_type f
     return result;
 }
 
-
-
-
-
 NCWeights weights_allocate(size_t number_of_layers)
 {
     NCWeights result;

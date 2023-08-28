@@ -12,12 +12,12 @@ void init(void)
     SetTargetFPS(NO_ANIMATION_FPS);
 }
 
-void plot(const double start, const double end, size_t functions_amount, function_type* functions[])
+void plot(const double start, const double end, size_t functions_amount, function_type* functions)
 {
     init();
 
     double* X = linspace(start, end, ARRAY_SIZE);
-    double* Y[functions_amount];
+    double** Y = (double**)malloc(sizeof(double*) * functions_amount);
 
     for (size_t function_index = 0; function_index < functions_amount; function_index++)
     {
@@ -108,7 +108,7 @@ void bar(const double *Y, size_t amount)
         for (size_t point = 0; point < amount; point++)
         {
             DrawRectangle(
-                    (int)(space / 10 + space * point),
+                    (int)(space / 10 + space * (double)point),
                     HEIGHT - Y[point],
                     (int)(space * 0.8),
                     (int)Y[point],

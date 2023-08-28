@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.25)
-project(RayLib)
+project(NumC)
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
@@ -21,7 +21,7 @@ if (NOT raylib_FOUND)
     endif()
 endif()
 
-add_executable(${PROJECT_NAME} main.c Source/numc.h Source/numc.c Source/cplotlib.h Source/cplotlib.h Source/cplotlib.c Source/cplotlib.c Source/ncmatrix.c Source/ncmatrix.c Source/ncmatrix.h Source/ncvector.h Source/ncvector.c)
+add_executable(${PROJECT_NAME} main.c Source/numc.h Source/numc.c Source/cplotlib.h Source/cplotlib.c Source/ncmatrix.c Source/ncmatrix.h Source/ncvector.h Source/ncvector.c)
 
 target_link_libraries(${PROJECT_NAME} raylib)
 
