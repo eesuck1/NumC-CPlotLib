@@ -21,7 +21,9 @@ if (NOT raylib_FOUND)
     endif()
 endif()
 
-add_executable(${PROJECT_NAME} main.c Source/numc.h Source/numc.c Source/cplotlib.h Source/cplotlib.c Source/ncmatrix.c Source/ncmatrix.h Source/ncvector.h Source/ncvector.c)
+add_executable(${PROJECT_NAME} main.c Source/numc.h Source/numc.c Source/cplotlib.h Source/cplotlib.c Source/ncmatrix.c Source/ncmatrix.h Source/ncvector.h Source/ncvector.c
+        Source/ncautodiff.c
+        Source/ncautodiff.h)
 
 target_link_libraries(${PROJECT_NAME} raylib)
 

@@ -13,7 +13,6 @@
 
 #define INITIALIZER_AT(initializer, columns, i, j) (initializer)[(i) * (columns) + (j)]
 
-
 /*
  *
  * TODO: |--------------------------------------------------------------------------------------------|
